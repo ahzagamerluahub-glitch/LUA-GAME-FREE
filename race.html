@@ -1,39 +1,60 @@
+<!DOCTYPE html>
+<html>
+<body style="margin:0;background:black">
+<button onclick="location.href='index.html'">⬅ Menu</button>
 <canvas id="c"></canvas>
 <script>
-const ctx = c.getContext("2d");
-c.width=800; c.height=500;
+const c=document.getElementById("c"),ctx=c.getContext("2d");
+c.width=800;c.height=500;
 
-let players = [
- {x:100,y:100,a:0,color:"red",move:false,key:"a"},
- {x:100,y:200,a:0,color:"blue",move:false,key:"s"}
-];
+let n=parseInt(new URLSearchParams(location.search).get("players"))||2;
+const keys=["a","s","d","f","g","h"];
 
-document.onkeydown=e=>{
- players.forEach(p=>{
-  if(e.key==p.key) p.move=true;
- });
+let players=[];
+
+for(let i=0;i<n;i++){
+ players.push({x:50,y:100+i*60,a:0,key:keys[i],move:false});
 }
-document.onkeyup=e=>{
- players.forEach(p=>{
-  if(e.key==p.key) p.move=false;
- });
-}
+
+onkeydown=e=>{
+ players.forEach(p=>{ if(e.key==p.key) p.move=true; });
+};
+onkeyup=e=>{
+ players.forEach(p=>{ if(e.key==p.key) p.move=false; });
+};
+
+let winner=null;
 
 function loop(){
- ctx.clearRect(0,0,800,500);
+ ctx.fillStyle="#000";
+ ctx.fillRect(0,0,800,500);
 
- players.forEach(p=>{
-  if(p.move){
+ ctx.fillStyle="white";
+ ctx.fillRect(750,0,5,500);
+
+ players.forEach((p,i)=>{
+  if(!winner && p.move){
    p.x+=Math.cos(p.a)*2;
    p.y+=Math.sin(p.a)*2;
    p.a+=0.05;
+
+   if(p.x>750) winner=i+1;
   }
 
-  ctx.fillStyle=p.color;
+  ctx.fillStyle="red";
   ctx.fillRect(p.x,p.y,20,20);
  });
+
+ if(winner){
+  ctx.fillStyle="yellow";
+  ctx.font="40px Arial";
+  ctx.fillText("P"+winner+" WIN!",300,250);
+  return;
+ }
 
  requestAnimationFrame(loop);
 }
 loop();
 </script>
+</body>
+</html>
