@@ -1,60 +1,85 @@
 <!DOCTYPE html>
 <html>
-<body style="margin:0;background:black;">
+<body style="margin:0;background:black">
+<button onclick="location.href='index.html'">⬅ Menu</button>
 <canvas id="c"></canvas>
 <script>
-const c=document.getElementById("c");
-const ctx=c.getContext("2d");
+const c=document.getElementById("c"),ctx=c.getContext("2d");
 c.width=800;c.height=500;
-
-const keys=["a","s","d","f","g","h"];
-let players=[];
-let bullets=[];
 
 const url=new URLSearchParams(location.search);
 let n=parseInt(url.get("players"))||2;
 
+const keys=["a","s","d","f","g","h"];
+
+let players=[];
+let bullets=[];
+
 for(let i=0;i<n;i++){
- players.push({x:100+i*80,y:250,a:0,color:`hsl(${i*60},100%,50%)`,move:false});
+ players.push({
+  x:100+i*80,y:250,a:0,
+  hp:3,alive:true,
+  key:keys[i],move:false
+ });
 }
 
+// CONTROL
 onkeydown=e=>{
- players.forEach((p,i)=>{
-  if(e.key==keys[i]){
+ players.forEach(p=>{
+  if(e.key==p.key){
    p.move=true;
-   bullets.push({x:p.x,y:p.y,a:p.a});
+   bullets.push({x:p.x,y:p.y,a:p.a,owner:p});
   }
  });
 };
-
 onkeyup=e=>{
- players.forEach((p,i)=>{
-  if(e.key==keys[i]) p.move=false;
+ players.forEach(p=>{
+  if(e.key==p.key) p.move=false;
  });
 };
 
+// LOOP
 function loop(){
  ctx.fillStyle="#111";
  ctx.fillRect(0,0,800,500);
 
+ let alive=players.filter(p=>p.alive);
+
+ // WIN
+ if(alive.length<=1){
+  ctx.fillStyle="yellow";
+  ctx.font="40px Arial";
+  ctx.fillText("WINNER!",300,250);
+  return;
+ }
+
  players.forEach(p=>{
+  if(!p.alive) return;
+
   if(p.move){
    p.x+=Math.cos(p.a)*2;
    p.y+=Math.sin(p.a)*2;
    p.a+=0.05;
   }
 
-  ctx.save();
-  ctx.translate(p.x,p.y);
-  ctx.rotate(p.a);
-  ctx.fillStyle=p.color;
-  ctx.fillRect(-10,-10,20,20);
-  ctx.restore();
+  ctx.fillStyle="lime";
+  ctx.fillRect(p.x,p.y,20,20);
  });
 
  bullets.forEach(b=>{
   b.x+=Math.cos(b.a)*5;
   b.y+=Math.sin(b.a)*5;
+
+  players.forEach(p=>{
+   if(p!==b.owner && p.alive){
+    let dx=p.x-b.x,dy=p.y-b.y;
+    if(Math.hypot(dx,dy)<15){
+     p.hp--;
+     if(p.hp<=0) p.alive=false;
+    }
+   }
+  });
+
   ctx.fillStyle="yellow";
   ctx.fillRect(b.x,b.y,5,5);
  });
