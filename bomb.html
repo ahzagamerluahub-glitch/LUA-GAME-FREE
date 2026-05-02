@@ -1,0 +1,32 @@
+<canvas id="c"></canvas>
+<script>
+const ctx=c.getContext("2d");
+c.width=800;c.height=500;
+
+let bombs=[];
+
+document.onkeydown=e=>{
+ if(e.key=="a"){
+  bombs.push({x:400,y:250,t:60});
+ }
+}
+
+function loop(){
+ ctx.clearRect(0,0,800,500);
+
+ bombs.forEach(b=>{
+  b.t--;
+
+  if(b.t>0){
+   ctx.fillStyle="black";
+   ctx.fillRect(b.x,b.y,10,10);
+  } else {
+   ctx.fillStyle="orange";
+   ctx.fillRect(b.x-20,b.y-20,40,40);
+  }
+ });
+
+ requestAnimationFrame(loop);
+}
+loop();
+</script>
