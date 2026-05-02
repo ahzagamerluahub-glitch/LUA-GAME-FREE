@@ -1,21 +1,27 @@
 <!DOCTYPE html>
 <html>
-<body style="margin:0;background:black;">
+<body style="margin:0;background:black">
+<button onclick="location.href='index.html'">⬅ Menu</button>
 <canvas id="c"></canvas>
 <script>
-const c=document.getElementById("c");
-const ctx=c.getContext("2d");
+const c=document.getElementById("c"),ctx=c.getContext("2d");
 c.width=800;c.height=500;
 
+let n=parseInt(new URLSearchParams(location.search).get("players"))||2;
 const keys=["a","s","d","f","g","h"];
 
 let snakes=[];
 
-let n=parseInt(new URLSearchParams(location.search).get("players"))||2;
-
 for(let i=0;i<n;i++){
- snakes.push({x:100+i*60,y:100,dx:2,dy:0,key:keys[i]});
+ snakes.push({
+  body:[{x:100+i*50,y:100}],
+  dx:2,dy:0,
+  key:keys[i],
+  alive:true
+ });
 }
+
+let food={x:400,y:250};
 
 onkeydown=e=>{
  snakes.forEach(s=>{
@@ -32,11 +38,31 @@ function loop(){
  ctx.fillRect(0,0,800,500);
 
  snakes.forEach(s=>{
-  s.x+=s.dx;
-  s.y+=s.dy;
+  if(!s.alive) return;
+
+  let head={x:s.body[0].x+s.dx,y:s.body[0].y+s.dy};
+  s.body.unshift(head);
+
+  let d=Math.hypot(head.x-food.x,head.y-food.y);
+
+  if(d<10){
+   food.x=Math.random()*800;
+   food.y=Math.random()*500;
+  }else{
+   s.body.pop();
+  }
+
+  // mati kalau keluar
+  if(head.x<0||head.y<0||head.x>800||head.y>500){
+   s.alive=false;
+  }
+
   ctx.fillStyle="lime";
-  ctx.fillRect(s.x,s.y,10,10);
+  s.body.forEach(p=>ctx.fillRect(p.x,p.y,10,10));
  });
+
+ ctx.fillStyle="red";
+ ctx.fillRect(food.x,food.y,10,10);
 
  requestAnimationFrame(loop);
 }
