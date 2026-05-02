@@ -1,19 +1,27 @@
+<!DOCTYPE html>
+<html>
+<body style="margin:0;background:black;">
 <canvas id="c"></canvas>
 <script>
+const c=document.getElementById("c");
 const ctx=c.getContext("2d");
 c.width=800;c.height=500;
 
+const keys=["a","s","d","f","g","h"];
 let ball={x:400,y:250,vx:0,vy:0};
 
-document.onkeydown=e=>{
- if(e.key=="a"){
-  ball.vx=Math.random()*4-2;
-  ball.vy=Math.random()*4-2;
- }
-}
+onkeydown=e=>{
+ keys.forEach(k=>{
+  if(e.key==k){
+   ball.vx=Math.random()*6-3;
+   ball.vy=Math.random()*6-3;
+  }
+ });
+};
 
 function loop(){
- ctx.clearRect(0,0,800,500);
+ ctx.fillStyle="black";
+ ctx.fillRect(0,0,800,500);
 
  ball.x+=ball.vx;
  ball.y+=ball.vy;
@@ -27,3 +35,5 @@ function loop(){
 }
 loop();
 </script>
+</body>
+</html>
