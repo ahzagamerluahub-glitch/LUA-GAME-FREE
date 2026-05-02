@@ -1,0 +1,28 @@
+<canvas id="c"></canvas>
+<script>
+const ctx=c.getContext("2d");
+c.width=800;c.height=500;
+
+let snake={x:100,y:100,dx:2,dy:0};
+
+document.onkeydown=e=>{
+ if(e.key=="a"){
+  let t=snake.dx;
+  snake.dx=-snake.dy;
+  snake.dy=t;
+ }
+}
+
+function loop(){
+ ctx.clearRect(0,0,800,500);
+
+ snake.x+=snake.dx;
+ snake.y+=snake.dy;
+
+ ctx.fillStyle="lime";
+ ctx.fillRect(snake.x,snake.y,10,10);
+
+ requestAnimationFrame(loop);
+}
+loop();
+</script>
