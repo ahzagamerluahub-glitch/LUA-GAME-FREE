@@ -1,28 +1,46 @@
+<!DOCTYPE html>
+<html>
+<body style="margin:0;background:black;">
 <canvas id="c"></canvas>
 <script>
+const c=document.getElementById("c");
 const ctx=c.getContext("2d");
 c.width=800;c.height=500;
 
-let snake={x:100,y:100,dx:2,dy:0};
+const keys=["a","s","d","f","g","h"];
 
-document.onkeydown=e=>{
- if(e.key=="a"){
-  let t=snake.dx;
-  snake.dx=-snake.dy;
-  snake.dy=t;
- }
+let snakes=[];
+
+let n=parseInt(new URLSearchParams(location.search).get("players"))||2;
+
+for(let i=0;i<n;i++){
+ snakes.push({x:100+i*60,y:100,dx:2,dy:0,key:keys[i]});
 }
 
+onkeydown=e=>{
+ snakes.forEach(s=>{
+  if(e.key==s.key){
+   let t=s.dx;
+   s.dx=-s.dy;
+   s.dy=t;
+  }
+ });
+};
+
 function loop(){
- ctx.clearRect(0,0,800,500);
+ ctx.fillStyle="#000";
+ ctx.fillRect(0,0,800,500);
 
- snake.x+=snake.dx;
- snake.y+=snake.dy;
-
- ctx.fillStyle="lime";
- ctx.fillRect(snake.x,snake.y,10,10);
+ snakes.forEach(s=>{
+  s.x+=s.dx;
+  s.y+=s.dy;
+  ctx.fillStyle="lime";
+  ctx.fillRect(s.x,s.y,10,10);
+ });
 
  requestAnimationFrame(loop);
 }
 loop();
 </script>
+</body>
+</html>
