@@ -1,0 +1,39 @@
+<canvas id="c"></canvas>
+<script>
+const ctx = c.getContext("2d");
+c.width=800; c.height=500;
+
+let players = [
+ {x:100,y:100,a:0,color:"red",move:false,key:"a"},
+ {x:100,y:200,a:0,color:"blue",move:false,key:"s"}
+];
+
+document.onkeydown=e=>{
+ players.forEach(p=>{
+  if(e.key==p.key) p.move=true;
+ });
+}
+document.onkeyup=e=>{
+ players.forEach(p=>{
+  if(e.key==p.key) p.move=false;
+ });
+}
+
+function loop(){
+ ctx.clearRect(0,0,800,500);
+
+ players.forEach(p=>{
+  if(p.move){
+   p.x+=Math.cos(p.a)*2;
+   p.y+=Math.sin(p.a)*2;
+   p.a+=0.05;
+  }
+
+  ctx.fillStyle=p.color;
+  ctx.fillRect(p.x,p.y,20,20);
+ });
+
+ requestAnimationFrame(loop);
+}
+loop();
+</script>
