@@ -1,24 +1,38 @@
+<!DOCTYPE html>
+<html>
+<body style="margin:0;background:black;">
 <canvas id="c"></canvas>
 <script>
+const c=document.getElementById("c");
 const ctx=c.getContext("2d");
 c.width=800;c.height=500;
 
+const keys=["a","s","d","f","g","h"];
 let bombs=[];
+let players=[];
 
-document.onkeydown=e=>{
- if(e.key=="a"){
-  bombs.push({x:400,y:250,t:60});
- }
+let n=parseInt(new URLSearchParams(location.search).get("players"))||2;
+
+for(let i=0;i<n;i++){
+ players.push({x:100+i*80,y:250,key:keys[i]});
 }
 
+onkeydown=e=>{
+ players.forEach(p=>{
+  if(e.key==p.key){
+   bombs.push({x:p.x,y:p.y,t:60});
+  }
+ });
+};
+
 function loop(){
- ctx.clearRect(0,0,800,500);
+ ctx.fillStyle="#111";
+ ctx.fillRect(0,0,800,500);
 
  bombs.forEach(b=>{
   b.t--;
-
   if(b.t>0){
-   ctx.fillStyle="black";
+   ctx.fillStyle="white";
    ctx.fillRect(b.x,b.y,10,10);
   } else {
    ctx.fillStyle="orange";
@@ -30,3 +44,5 @@ function loop(){
 }
 loop();
 </script>
+</body>
+</html>
